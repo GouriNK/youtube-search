@@ -1,32 +1,22 @@
 import React, {useState, useEffect} from "react";
-import youtube from "../api/youtube";
 import SearchBar from "./SearchBar";
 import VideoList from "./VideoList";
 import VideoDetail from "./VideoDetail";
+import useVideos from "../hooks/useVideos";
 
 const App = () => {
-
-  const [videoList, setVideoList] = useState([]);
+  
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [videos, search] = useVideos('buildings');
 
-  useEffect(()=>{
-    onSearchSubmit('buildings');
-  },[]);
-
-  const onSearchSubmit = async (term) => {
-    const response = await youtube.get("/search", {
-      params: {
-        q: term,
-      },
-    });
-    setVideoList(response.data.items);
-    setSelectedVideo(response.data.items[0]);
-  };
+  useEffect (() => {
+    setSelectedVideo(videos[0]);
+  }, [videos])
 
   // check how to setVideo on select. Line 38
   return (
       <div className="ui container" style={{ marginTop: "10px" }}>
-        <SearchBar onSubmit={onSearchSubmit} />
+        <SearchBar onSubmit={search} />
         <div className="ui grid">
           <div className="ui row">
             <div className="eleven wide column">
@@ -34,7 +24,7 @@ const App = () => {
             </div>
             <div className="five wide column">
             <VideoList 
-              videos={videoList}
+              videos={videos}
               onVideoSelect={setSelectedVideo}
             />
             </div>
@@ -45,6 +35,50 @@ const App = () => {
 
 };
 
+// == Functional component WITHOUT CUSTOM HOOKS==
+// const App = () => {
+
+//   const [videoList, setVideoList] = useState([]);
+//   const [selectedVideo, setSelectedVideo] = useState(null);
+
+//   useEffect(()=>{
+//     onSearchSubmit('buildings');
+//   },[]);
+
+//   const onSearchSubmit = async (term) => {
+//     const response = await youtube.get("/search", {
+//       params: {
+//         q: term,
+//       },
+//     });
+//     setVideoList(response.data.items);
+//     setSelectedVideo(response.data.items[0]);
+//   };
+
+//   // check how to setVideo on select. Line 38
+//   return (
+//       <div className="ui container" style={{ marginTop: "10px" }}>
+//         <SearchBar onSubmit={onSearchSubmit} />
+//         <div className="ui grid">
+//           <div className="ui row">
+//             <div className="eleven wide column">
+//             <VideoDetail video={selectedVideo} />
+//             </div>
+//             <div className="five wide column">
+//             <VideoList 
+//               videos={videoList}
+//               onVideoSelect={setSelectedVideo}
+//             />
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+
+// };
+
+
+// == CLASS BASED COMPONENT ==
 // class App extends React.Component {
 //   state = {
 //     videoList: [],
